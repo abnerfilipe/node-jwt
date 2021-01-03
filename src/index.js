@@ -7,12 +7,19 @@ import {
 } from './middlewares/auth'
 import { generateToken } from './services/auth'
 
+import database from './config/database'
+import userRoute from './routes/userRoute'
+import postRoute from './routes/postRoute'
+
 const app = Express()
 const port = 3000
 
 app.set('json spaces', 2);
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(verifyToken)
+
+userRoute(app)
+postRoute(app)
 
 app.get('/', (req, res) => res.send('Olá mundo pelo Express!'))
 
@@ -38,4 +45,7 @@ app.post('/login', (req, res) => {
 app.get('/protected', protectRoute, (req, res) => res.send(req.decoded))
 
 
-app.listen(port, () => console.log('Api rodando na porta 3000'))
+// app.listen(port, () => console.log('Api rodando na porta 3000'))
+database.connect().then(() => {
+    app.listen(port, () => console.log('Api rodando na porta http://localhost:'+port))
+})
